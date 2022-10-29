@@ -20,7 +20,8 @@ namespace Domain.OOP.ES.Customer
 
         public static CustomerRegistered Register(RegisterCustomer command)
         {
-            return null; // TODO
+            var registerCustomer = CustomerRegistered.Build(command.CustomerId, command.EmailAddress, command.ConfirmationHash, command.Name);
+            return registerCustomer;
         }
 
         public static Customer3 Reconstitute(List<Event> events)
@@ -34,16 +35,27 @@ namespace Domain.OOP.ES.Customer
 
         public List<Event> ConfirmEmailAddress(ConfirmCustomerEmailAddress command)
         {
-            // TODO
-
-            return new List<Event>(); // TODO
+            var eventList = new List<Event>();
+            if (!isEmailAddressConfirmed) {
+                if (command.ConfirmationHash != confirmationHash) {
+                    var customerEmailAddressConfirmed = CustomerEmailAddressConfirmationFailed.Build(command.CustomerId);
+                    eventList.Add(customerEmailAddressConfirmed);
+                } else {
+                    var customerEmailAddressConfirmed = CustomerEmailAddressConfirmed.Build(command.CustomerId);
+                    eventList.Add(customerEmailAddressConfirmed);
+                }
+            }
+            return eventList;
         }
 
         public List<Event> ChangeEmailAddress(ChangeCustomerEmailAddress command)
         {
-            // TODO
-
-            return new List<Event>(); // TODO
+            var eventList = new List<Event>();
+            if (command.EmailAddress != emailAddress) {
+                var customerEmailAddressChanged = CustomerEmailAddressChanged.Build(command.CustomerId,command.EmailAddress,  command.ConfirmationHash);
+                eventList.Add(customerEmailAddressChanged);
+            }
+            return eventList;
         }
 
         private void Apply(List<Event> events)
@@ -59,12 +71,18 @@ namespace Domain.OOP.ES.Customer
             switch (evt)
             {
                 case CustomerRegistered e:
-                    // TODO
+                    confirmationHash = e.ConfirmationHash;
+                    emailAddress = e.EmailAddress;
+                    name = e.Name;
                     break;
                 case CustomerEmailAddressConfirmed e:
+                    isEmailAddressConfirmed = true;
                     // TODO
                     break;
                 case CustomerEmailAddressChanged e:
+                    isEmailAddressConfirmed = false;
+                    confirmationHash = e.ConfirmationHash;
+                    emailAddress = e.EmailAddress;
                     // TODO
                     break;
             }
