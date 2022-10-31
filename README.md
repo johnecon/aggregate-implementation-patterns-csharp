@@ -139,3 +139,15 @@ will be how to test them.
 * have a look at the *ChangeCustomerName* Command and *CustomerNameChanged* Event
 * implement the required test cases first
 * implement just enough production code to make the test pass
+
+
+
+### Check tests
+```
+dotnet test Domain.Tests/Domain.Tests.csproj --list-tests
+```
+
+### Run specific tests
+```
+dotnet test Domain.Tests/Domain.Tests.csproj --filter Domain.Tests.Functional.ES.Customer.Customer5Tests
+```

@@ -23,7 +23,9 @@ namespace Domain.OOP.ES.Customer
         {
             Customer4 customer = new Customer4();
 
-            // TODO
+            var evt = CustomerRegistered.Build(command.CustomerId, command.EmailAddress, command.ConfirmationHash, command.Name);
+            customer.RecordThat(evt);
+            customer.Apply(evt);
 
             return customer;
         }
@@ -39,12 +41,23 @@ namespace Domain.OOP.ES.Customer
 
         public void ConfirmEmailAddress(ConfirmCustomerEmailAddress command)
         {
-            // TODO
+            if (command.ConfirmationHash != confirmationHash) {
+                    var customerEmailAddressConfirmationFailed = CustomerEmailAddressConfirmationFailed.Build(command.CustomerId);
+                    RecordThat(customerEmailAddressConfirmationFailed);
+            } else {
+                if (!isEmailAddressConfirmed) {
+                    var customerEmailAddressConfirmed = CustomerEmailAddressConfirmed.Build(command.CustomerId);
+                    RecordThat(customerEmailAddressConfirmed);
+                }
+            }
         }
 
         public void ChangeEmailAddress(ChangeCustomerEmailAddress command)
         {
-            // TODO
+            if (command.EmailAddress != emailAddress) {
+                var customerEmailAddressChanged = CustomerEmailAddressChanged.Build(command.CustomerId,command.EmailAddress,  command.ConfirmationHash);
+                RecordThat(customerEmailAddressChanged);
+            }
         }
 
         private void RecordThat(Event evt)
@@ -65,13 +78,17 @@ namespace Domain.OOP.ES.Customer
             switch (evt)
             {
                 case CustomerRegistered e:
-                    // TODO
+                    confirmationHash = e.ConfirmationHash;
+                    emailAddress = e.EmailAddress;
+                    name = e.Name;
                     break;
                 case CustomerEmailAddressConfirmed e:
-                    // TODO
+                    isEmailAddressConfirmed = true;
                     break;
                 case CustomerEmailAddressChanged e:
-                    // TODO
+                    isEmailAddressConfirmed = false;
+                    confirmationHash = e.ConfirmationHash;
+                    emailAddress = e.EmailAddress;
                     break;
             }
         }

@@ -36,11 +36,12 @@ namespace Domain.OOP.ES.Customer
         public List<Event> ConfirmEmailAddress(ConfirmCustomerEmailAddress command)
         {
             var eventList = new List<Event>();
-            if (!isEmailAddressConfirmed) {
-                if (command.ConfirmationHash != confirmationHash) {
-                    var customerEmailAddressConfirmed = CustomerEmailAddressConfirmationFailed.Build(command.CustomerId);
-                    eventList.Add(customerEmailAddressConfirmed);
-                } else {
+            if (command.ConfirmationHash != confirmationHash) {
+                var customerEmailAddressConfirmationFailed = CustomerEmailAddressConfirmationFailed.Build(command.CustomerId);
+                eventList.Add(customerEmailAddressConfirmationFailed);
+            } else {
+                if (!isEmailAddressConfirmed)
+                {
                     var customerEmailAddressConfirmed = CustomerEmailAddressConfirmed.Build(command.CustomerId);
                     eventList.Add(customerEmailAddressConfirmed);
                 }
@@ -77,13 +78,11 @@ namespace Domain.OOP.ES.Customer
                     break;
                 case CustomerEmailAddressConfirmed e:
                     isEmailAddressConfirmed = true;
-                    // TODO
                     break;
                 case CustomerEmailAddressChanged e:
                     isEmailAddressConfirmed = false;
                     confirmationHash = e.ConfirmationHash;
                     emailAddress = e.EmailAddress;
-                    // TODO
                     break;
             }
         }
