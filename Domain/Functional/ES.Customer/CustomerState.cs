@@ -32,13 +32,17 @@ namespace Domain.Functional.ES.Customer
                 switch (evt)
                 {
                     case CustomerRegistered e:
-                        // TODO
+                        ConfirmationHash = e.ConfirmationHash;
+                        EmailAddress = e.EmailAddress;
+                        Name = e.Name;
                         break;
                     case CustomerEmailAddressConfirmed e:
-                        // TODO
+                        IsEmailAddressConfirmed = true;
                         break;
                     case CustomerEmailAddressChanged e:
-                        // TODO
+                        IsEmailAddressConfirmed = false;
+                        ConfirmationHash = e.ConfirmationHash;
+                        EmailAddress = e.EmailAddress;
                         break;
                 }
             }
